@@ -35,17 +35,18 @@ struct control_t {
         cout << "ALU_SRC: " << ALU_src << "\n";
         cout << "REG_WRITE: " << reg_write << "\n";
 
-        cout << "JUMP_REGISTER: " << reg_write << "\n";
-        cout << "BNE: " << reg_write << "\n";
-        cout << "LOAD_SIZE: " << reg_write << "\n";
+        cout << "JUMP_REGISTER: " << jump_register << "\n";
+        cout << "BNE: " << bne << "\n";
+        cout << "LOAD_SIZE: " << load_size << "\n";
         cout << "LUI: " << lui << "\n";
     }
+
     // TODO:
     // Decode instructions into control signals
     void decode(uint32_t instruction) {
         cout << "Instruction: " << "\n";
 
-        instruction = 156;
+        instruction = 2418147348;
         // std::cout << std::hex << 156 << "\n";
 
         // extract segment
@@ -61,6 +62,7 @@ struct control_t {
         // compare to existing opcodes (switch statement)
         if (opcode == 0) { // R-type (JR and shift are special cases)
             if (funct == 8) { // JR
+                cout << "JR" << "\n";
                 jump_register = 1;
                 reg_write = 0;
                 reg_dest = 0;
@@ -74,6 +76,7 @@ struct control_t {
 
             // } 
             else { // all other R-types
+                cout << "R-type" << "\n";
                 mem_read = 0;
                 mem_write = 0;
                 reg_dest = 1;
@@ -82,9 +85,11 @@ struct control_t {
                 ALU_op = 2;
             }
         } else if (opcode == 2) { // J
+            cout << "Jump" << "\n";
             jump = 1;
             jump_register = 0;
         } else if (opcode == 3) { // JAL
+            cout << "Jal" << "\n";
             jump = 1;
             jump_register = 0;
             mem_to_reg = 2;
@@ -92,6 +97,7 @@ struct control_t {
         }
         else { // I-type (branch, store, load, others)
             if (opcode == 4) { //BEQ
+                cout << "BEQ" << "\n";
                 branch = 1;
                 bne = 0;
                 ALU_src = 0;
@@ -99,6 +105,7 @@ struct control_t {
                 jump = 0;
                 jump_register = 0;
             } else if (opcode == 5) { // BNE
+                cout << "BNE" << "\n";
                 branch = 0;
                 bne = 1;
                 ALU_src = 0;
@@ -106,6 +113,7 @@ struct control_t {
                 jump = 0;
                 jump_register = 0;
             } else if (opcode == 40 | opcode == 41 | opcode == 43) { // stores
+                cout << "stores" << "\n";
                 ALU_src = 1;
                 reg_write = 0;
                 mem_read = 0;
@@ -114,6 +122,7 @@ struct control_t {
                 ALU_op = 0;
             } else if (opcode == 35 | opcode == 37 | opcode == 36) { // loads
                 if (opcode == 35) { // load word
+                    cout << "load word" << "\n";
                     ALU_src = 1;
                     reg_write = 1;
                     mem_read = 1;
@@ -124,6 +133,7 @@ struct control_t {
                     mem_to_reg = 1;
                     load_size = 2;
                 } else if (opcode == 37) { // load halfword
+                    cout << "load halfword" << "\n";
                     ALU_src = 2;
                     reg_write = 1;
                     mem_read = 1;
@@ -134,6 +144,7 @@ struct control_t {
                     mem_to_reg = 1;
                     load_size = 1;
                 } else { // load byte
+                    cout << "load byte" << "\n";
                     ALU_src = 2;
                     reg_write = 1;
                     mem_read = 1;
@@ -144,9 +155,12 @@ struct control_t {
                     mem_to_reg = 1;
                     load_size = 0;
                 }
-            }
-        }
+            } else { // other I-types 
 
+            }
+
+            // LUI
+        } 
 
     }
 
